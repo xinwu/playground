@@ -1,0 +1,110 @@
+envExport: 
+  services: 
+    mysql: 
+      charm: "cs:trusty/mysql-25"
+      num_units: 1
+      annotations: 
+        "gui-x": "1090"
+        "gui-y": "473"
+      to: 
+        - "lxc:juju-gui=0"
+    "rabbitmq-server": 
+      charm: "cs:trusty/rabbitmq-server-32"
+      num_units: 1
+      annotations: 
+        "gui-x": "2589"
+        "gui-y": "1696"
+      to: 
+        - "lxc:juju-gui=0"
+    keystone: 
+      charm: "cs:trusty/keystone-22"
+      num_units: 1
+      options: 
+        "admin-password": bsn
+        "openstack-origin": "cloud:trusty-icehouse"
+      annotations: 
+        "gui-x": "1084"
+        "gui-y": "915"
+      to: 
+        - "lxc:quantum-gateway=0"
+    "openstack-dashboard": 
+      charm: "cs:trusty/openstack-dashboard-11"
+      num_units: 1
+      options: 
+        "openstack-origin": "cloud:trusty-icehouse"
+      expose: true
+      annotations: 
+        "gui-x": "1091"
+        "gui-y": "1322"
+      to: 
+        - "lxc:quantum-gateway=0"
+    "nova-cloud-controller": 
+      charm: "cs:trusty/nova-cloud-controller-56"
+      num_units: 1
+      options: 
+        "network-manager": Neutron
+        "openstack-origin": "cloud:trusty-icehouse"
+      annotations: 
+        "gui-x": "1674"
+        "gui-y": "1529"
+      to: 
+        - "lxc:quantum-gateway=0"
+    glance: 
+      charm: "cs:trusty/glance-16"
+      num_units: 1
+      options: 
+        "openstack-origin": "cloud:trusty-icehouse"
+      annotations: 
+        "gui-x": "1781"
+        "gui-y": "928"
+      to: 
+        - "lxc:quantum-gateway=0"
+    "quantum-gateway": 
+      charm: "cs:trusty/quantum-gateway-13"
+      num_units: 1
+      options: 
+        "openstack-origin": "cloud:trusty-icehouse"
+      annotations: 
+        "gui-x": "2556"
+        "gui-y": "503"
+    "nova-compute": 
+      charm: "cs:trusty/nova-compute-20"
+      num_units: 1
+      options: 
+        "openstack-origin": "cloud:trusty-icehouse"
+      annotations: 
+        "gui-x": "3003"
+        "gui-y": "934"
+  relations: 
+    - - "keystone:shared-db"
+      - "mysql:shared-db"
+    - - "nova-cloud-controller:shared-db"
+      - "mysql:shared-db"
+    - - "nova-cloud-controller:amqp"
+      - "rabbitmq-server:amqp"
+    - - "nova-cloud-controller:image-service"
+      - "glance:image-service"
+    - - "nova-cloud-controller:identity-service"
+      - "keystone:identity-service"
+    - - "nova-compute:shared-db"
+      - "mysql:shared-db"
+    - - "nova-compute:amqp"
+      - "rabbitmq-server:amqp"
+    - - "nova-compute:image-service"
+      - "glance:image-service"
+    - - "nova-compute:cloud-compute"
+      - "nova-cloud-controller:cloud-compute"
+    - - "glance:shared-db"
+      - "mysql:shared-db"
+    - - "glance:identity-service"
+      - "keystone:identity-service"
+    - - "quantum-gateway:shared-db"
+      - "mysql:shared-db"
+    - - "quantum-gateway:amqp"
+      - "rabbitmq-server:amqp"
+    - - "quantum-gateway:quantum-network-service"
+      - "nova-cloud-controller:quantum-network-service"
+    - - "openstack-dashboard:identity-service"
+      - "keystone:identity-service"
+  series: trusty
+
