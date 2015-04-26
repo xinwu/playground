@@ -15,3 +15,6 @@ juju add-relation quantum-gateway mysql
 juju add-relation quantum-gateway:amqp rabbitmq-server:amqp
 juju add-relation quantum-gateway nova-cloud-controller
 juju add-relation openstack-dashboard keystone
+
+sleep 10
+juju set keystone admin-password="openstack"
